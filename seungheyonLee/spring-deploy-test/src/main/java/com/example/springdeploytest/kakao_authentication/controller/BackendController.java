@@ -3,6 +3,7 @@ package com.example.springdeploytest.kakao_authentication.controller;
 import java.io.IOException;
 import java.util.Map;
 
+import com.example.springdeploytest.kakao_authentication.controller.response.KakaoUserInfoResponse;
 import com.example.springdeploytest.kakao_authentication.service.KakaoAuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -27,12 +28,20 @@ public class BackendController {
      */
     @GetMapping("/login")
     @Transactional
-    public void requestLogin(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
+    public KakaoUserInfoResponse requestLogin(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
         log.info("requestLogin(): code {}", code);
-        Map<String, Object> tokenResponse = kakaoAuthenticationService.requestAccessToken(code);
-        String accessToken = (String) tokenResponse.get("access_token");
-        log.info("requestLogin(): accessToken {}", accessToken);
-
+//        Map<String, Object> tokenResponse = kakaoAuthenticationService.requestAccessToken(code);
+//        String accessToken = (String) tokenResponse.get("access_token");
+//        log.info("requestLogin(): accessToken {}", accessToken);
+//        Map<String, Object> userInfo = kakaoAuthenticationService.requestUserInfo(accessToken);
+//        String nickname = (String) ((Map) userInfo.get("properties")).get("nickname");
+//        String email = (String) ((Map) userInfo.get("kakao_account")).get("email");
+//        log.info("nickname {}", nickname);
+//        log.info("email: {}", email);
+//        KakaoUserInfoResponse userInfoResponse = new KakaoUserInfoResponse(nickname, email);
+        KakaoUserInfoResponse userInfoResponse=kakaoAuthenticationService.requestUserInfo(code);
+        log.info("requestLogin(): userInfoResponse {}", userInfoResponse);
+        return userInfoResponse;
     }
 
 }

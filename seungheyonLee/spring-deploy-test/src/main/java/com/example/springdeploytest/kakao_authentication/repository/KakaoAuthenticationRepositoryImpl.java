@@ -1,5 +1,6 @@
 package com.example.springdeploytest.kakao_authentication.repository;
 
+import com.example.springdeploytest.kakao_authentication.controller.response.KakaoUserInfoResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -22,7 +23,7 @@ public class KakaoAuthenticationRepositoryImpl implements KakaoAuthenticationRep
     // 토큰 요청 엔드포인트를 저장.
     private final String tokenRequestUri;
     // 사용자 정보 요청 엔드포인트를 저장.
-//    private final String userInfoRequestUri;
+    private final String userInfoRequestUri;
 
     // RestTemplate을 통한 HTTP 통신을 수행.
     private final RestTemplate restTemplate;
@@ -32,14 +33,14 @@ public class KakaoAuthenticationRepositoryImpl implements KakaoAuthenticationRep
             @Value("${kakao.client-id}") String clientId,
             @Value("${kakao.redirect-uri}") String redirectUri,
             @Value("${kakao.token-request-uri}") String tokenRequestUri,
-//            @Value("${kakao.user-info-request-uri}") String userInfoRequestUri,
+            @Value("${kakao.user-info-request-uri}") String userInfoRequestUri,
             RestTemplate restTemplate
     ) {
 //        this.loginUrl = loginUrl;
         this.clientId = clientId;
         this.redirectUri = redirectUri;
         this.tokenRequestUri = tokenRequestUri;
-//        this.userInfoRequestUri = userInfoRequestUri;
+        this.userInfoRequestUri = userInfoRequestUri;
         this.restTemplate = restTemplate;
     }
 
@@ -64,6 +65,24 @@ public class KakaoAuthenticationRepositoryImpl implements KakaoAuthenticationRep
         ResponseEntity<Map> response = restTemplate.exchange(
                 tokenRequestUri, HttpMethod.POST, entity, Map.class
         );
+        return response.getBody();
+    }
+
+    @Override
+    public Map<String, Object> getUserInfo(String accessToken) {
+        // 헤더에 Bearer 토큰을 설정.
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+        // HTTP 요청 엔티티 생성.
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        // GET 요청으로 사용자 정보 조회.
+        ResponseEntity<Map> response = restTemplate.exchange(
+                userInfoRequestUri, HttpMethod.GET, entity, Map.class
+        );
+        // 조회된 사용자 정보를 로깅.
+        log.info("User Info: {}", response.getBody());
+        //        String nickname = (String) ((Map) userInfo.get("properties")).get("nickname");
+//        String email = (String) ((Map) userInfo.get("kakao_account")).get("email");
         return response.getBody();
     }
     //    @Override
