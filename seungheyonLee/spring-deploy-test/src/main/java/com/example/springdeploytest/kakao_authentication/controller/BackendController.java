@@ -2,8 +2,10 @@ package com.example.springdeploytest.kakao_authentication.controller;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
-import com.example.springdeploytest.kakao_authentication.controller.response.KakaoUserInfoResponse;
+//import com.example.springdeploytest.kakao_authentication.controller.response.KakaoUserInfoResponse;
+import com.example.springdeploytest.kakao_authentication.controller.response.KakaoUserInfoResponseForm;
 import com.example.springdeploytest.kakao_authentication.service.KakaoAuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -26,22 +28,26 @@ public class BackendController {
     [3] 백엔드 → code로 Kakao에 Access Token 요청
     [4] Access Token으로 Kakao 사용자 정보 요청
      */
-    @GetMapping("/login")
-    @Transactional
-    public KakaoUserInfoResponse requestLogin(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
-        log.info("requestLogin(): code {}", code);
-//        Map<String, Object> tokenResponse = kakaoAuthenticationService.requestAccessToken(code);
-//        String accessToken = (String) tokenResponse.get("access_token");
-//        log.info("requestLogin(): accessToken {}", accessToken);
-//        Map<String, Object> userInfo = kakaoAuthenticationService.requestUserInfo(accessToken);
-//        String nickname = (String) ((Map) userInfo.get("properties")).get("nickname");
-//        String email = (String) ((Map) userInfo.get("kakao_account")).get("email");
-//        log.info("nickname {}", nickname);
-//        log.info("email: {}", email);
-//        KakaoUserInfoResponse userInfoResponse = new KakaoUserInfoResponse(nickname, email);
-        KakaoUserInfoResponse userInfoResponse=kakaoAuthenticationService.requestUserInfo(code);
-        log.info("requestLogin(): userInfoResponse {}", userInfoResponse);
-        return userInfoResponse;
-    }
-
+//    @GetMapping("/seungheyon/login")
+//    @Transactional
+//    public KakaoUserInfoResponseForm requestLogin(@RequestParam("code") String code) throws IOException {
+//        log.info("requestLogin(): code {}", code);
+//        KakaoUserInfoResponseForm response = kakaoAuthenticationService.requestUserInfo(code);
+//        log.info("requestLogin(): userInfoResponse {}", response);
+//        //redis를 사용해서 userToken을 발행해서 처리한다
+//        String accessToken = response.getAccessToken();
+//        String temporaryUserToken = createTemporaryUserToken(accessToken);
+//        return userInfoResponse;
+//    }
+//
+//    private String createUserTokenWithAccessToken(Account account, String accessToken) {
+//        try {
+//            String userToken = UUID.randomUUID().toString();
+//            redisCacheService.setKeyAndValue(account.getId(), accessToken);
+//            redisCacheService.setKeyAndValue(userToken, account.getId());
+//            return userToken;
+//        } catch (Exception e) {
+//            throw new RuntimeException("Error storing token in Redis: " + e.getMessage());
+//        }
+//    }
 }

@@ -1,7 +1,7 @@
 package com.example.springdeploytest.kakao_authentication.service;
 
-import com.example.springdeploytest.kakao_authentication.controller.response.KakaoUserInfoResponse;
 import com.example.springdeploytest.kakao_authentication.repository.KakaoAuthenticationRepository;
+import com.example.springdeploytest.kakao_authentication.service.response.KakaoUserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,21 +13,19 @@ public class KakaoAuthenticationServiceImpl implements KakaoAuthenticationServic
     final private KakaoAuthenticationRepository kakaoAuthenticationRepository;
 
     @Override
-    public Map<String, Object> requestAccessToken(String code) {
-        return this.kakaoAuthenticationRepository.getAccessToken(code);
+    public KakaoUserInfoResponse handleLogin(String code) {
+        // Map<String, Object> getAccessToken(String code);
+        Map<String, Object> tokenResponse = kakaoAuthenticationRepository.getAccessToken(code);
+        String accessToken = tokenResponse.get("access_token").toString();
+
+        // Map<String, Object> getUserInfo(String accessToken);
+        Map<String, Object> userInfoResponse = kakaoAuthenticationRepository.getUserInfo(accessToken);
+        Map<?, ?> userInfoProperties = (Map<?, ?>) userInfoResponse.get("properties");
+        String nickname = (String) (userInfoProperties).get("nickname");
+
+        Map<?, ?> userInfoKakaoAccount = (Map<?, ?>) userInfoResponse.get("kakao_account");
+        String email = (String) (userInfoKakaoAccount).get("email");
+
+        return KakaoUserInfoResponse.from(email, nickname, accessToken);
     }
-
-    @Override
-    public KakaoUserInfoResponse requestUserInfo(String code) {
-        // Step 1: 코드로 액세스 토큰 요청
-        Map<String, Object> tokenResponse = requestAccessToken(code);
-        String accessToken = (String) tokenResponse.get("access_token");
-
-        // Step 2: 액세스 토큰으로 사용자 정보 요청
-        Map<String, Object> userInfo = kakaoAuthenticationRepository.getUserInfo(accessToken);
-        // Step 3: DTO로 포장해서 반환
-        return KakaoUserInfoResponse.from(userInfo);
-    }
-
-
 }
